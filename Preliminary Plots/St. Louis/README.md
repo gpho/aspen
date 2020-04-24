@@ -10,7 +10,7 @@ We will start with a different exploratory notebook per data source, and will co
 
 
 ### Data sources used
-[Link?](http://?)
+[St. Louis Neighborhoods](https://www.stlouis-mo.gov/data/datasets/dataset.cfm?id=85)
 + Leo can you explain the file formats or add links to the documentation?
 
 ### Installation instructions
@@ -39,3 +39,4 @@ To run notebook:
 
 ### Useful links
 [Info about Shapefiles](https://www.earthdatascience.org/workshops/gis-open-source-python/intro-vector-data-python/)
+[Python open-source GIS tools](https://automating-gis-processes.github.io/CSC18/lessons/L1/Intro-Python-GIS.html)
