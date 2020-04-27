@@ -1,0 +1,98 @@
+---
+title: "st_louis_food"
+author: "Austin Li"
+date: "4/26/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE, cache=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidycensus)
+library(janitor)
+library(skimr)
+library(readxl)
+library(acs)
+
+
+data <- read_excel("./r-food/usda2015.xlsx") %>%
+  filter(State == "Missouri", County == "St. Louis City") %>%
+  clean_names()
+```
+
+```{r include=FALSE, echo=FALSE}
+# v18 <- load_variables(2018, "acs5", cache=TRUE)
+
+# View(v18)
+```
+
+```{r food stamps, include=FALSE}
+fsvars <- c(Est_Total = "B19058_001",
+            With_Cash_Public_Assistance = "B19058_002",
+            No_Cash_Public_Assistance = "B19058_003")
+
+food_stamp <- get_acs(geography = "tract",
+                      variables = fsvars,
+                      year = 2018,
+                      state = "MO",
+                      county = "St. Louis City",
+                      geometry = TRUE)
+```
+
+
+```{r food stamps, echo=FALSE}
+food_stamp %>%
+  ggplot(aes(fill = estimate, color = estimate)) +
+  facet_wrap(~ variable) +
+  geom_sf() +
+  scale_fill_viridis_c(direction = -1) +
+  scale_color_viridis_c(direction = -1) +
+  labs(title = "Proportion of Population on Food Stamps / Income Assistance",
+       caption = "Source: American Community Survey 2014-2018") +
+  theme_void()
+```
+
+
+```{r racial geography, include=FALSE}
+pop <- get_decennial(geography = "state", variables = "P001001", year = 2010)
+
+rural <- get_decennial(geography = "state", variables = c("P001001", "P002005"), year = 2010, output = "wide")
+
+rural <- rural %>%
+  rename(state = NAME) %>%
+  mutate(prop_rural = P002005/P001001, state = reorder(state, prop_rural))
+
+racevars <- c(White = "B02001_002", 
+              Black = "B02001_003", 
+              Asian = "B02001_005",
+              Hispanic = "B03003_003")
+
+pop_dem <- get_acs(geography = "tract",
+                  variables = racevars, 
+                  year = 2018,
+                  state = "MO",
+                  county = "St. Louis City",
+                  geometry = TRUE,
+                  summary_var = "B02001_001") 
+```
+
+```{r graphing, echo=FALSE}
+pop_dem %>%
+  mutate(Percent = 100 * (estimate / summary_est)) %>%
+  ggplot(aes(fill = Percent, color = Percent)) +
+  facet_wrap(~ variable) +
+  geom_sf() +
+  scale_fill_viridis_c(direction = -1) +
+  scale_color_viridis_c(direction = -1) +
+  labs(title = "Racial Geography of St. Louis City, MO",
+       caption = "Source: American Community Survey 2014-2018") +
+  theme_void()
+```
+
+```{r combined data, echo=FALSE}
+combined_fs <- data %>% full_join(food_stamp, by = c("census_tract" = "GEOID"))
+
+```
+
+
