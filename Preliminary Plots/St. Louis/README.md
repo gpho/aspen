@@ -11,7 +11,7 @@ We will start with a different exploratory notebook per data source, and will co
 
 ### Data sources used
 [St. Louis Neighborhoods](https://www.stlouis-mo.gov/data/datasets/dataset.cfm?id=85)
-+ Leo can you explain the file formats or add links to the documentation?
+You will need all of the file formats in order to utilize the map in geopandas, but the only one you need to open is the shp. The tl_2017_29_tract.shp is the map with the tracts while the BND_Nhd88_cw.shp is the neighborhood/wards files. 
 
 ### Installation instructions
 
